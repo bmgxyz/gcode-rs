@@ -115,15 +115,22 @@ where
         line: &mut Line<'input, B>,
         temp_gcode: &mut Option<GCode<B::Arguments>>,
     ) {
+        // First, we check to see if the character is actually a new command.
         if let Some(mnemonic) = Mnemonic::for_letter(word.letter) {
-            // we need to start another gcode. push the one we were building
-            // onto the line so we can start working on the next one
+            // We need to start another gcode.
+
             self.last_gcode_type = Some(word);
+
             if let Some(completed) = temp_gcode.take() {
+                // We were already in progress building arguments for this code, and now we found
+                // a new command that effectively ends the previous command.
+
+                // Push the g-code we were building onto the line so we can start working on the next one.
                 if let Err(e) = line.push_gcode(completed) {
                     self.on_gcode_push_error(e.0);
                 }
             }
+
             *temp_gcode = Some(GCode::new_with_argument_buffer(
                 mnemonic,
                 word.value,
@@ -238,7 +245,7 @@ where
                     }
                 },
                 Atom::Newline(_) => {
-                    if !line.is_empty() {
+                    if !line.is_empty() || temp_gcode.is_some() {
                         // Newline ends the current command
                         // if there was something to parse.
                         break;
@@ -429,9 +436,25 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
     fn implicit_command_after_newline() {
-        let src = "G01 X1.0 Y2.0\n X3.0 Y4.0";
+        let src = "G00\nG01 X1.0 Y2.0\nX3.0 Y4.0";
+        let expected = vec![
+            GCode::new(Mnemonic::General, 0.0, Span::PLACEHOLDER),
+            GCode::new(Mnemonic::General, 1.0, Span::PLACEHOLDER)
+                .with_argument(Word::new('X', 1.0, Span::PLACEHOLDER))
+                .with_argument(Word::new('Y', 2.0, Span::PLACEHOLDER)),
+            GCode::new(Mnemonic::General, 1.0, Span::PLACEHOLDER)
+                .with_argument(Word::new('X', 3.0, Span::PLACEHOLDER))
+                .with_argument(Word::new('Y', 4.0, Span::PLACEHOLDER)),
+        ];
+
+        let got: Vec<_> = crate::parse(src).collect();
+        assert_eq!(got, expected);
+    }
+
+    #[test]
+    fn implicit_command_missing_start() {
+        let src = "G01 X1.0 Y2.0\nX3.0 Y4.0";
         let expected = vec![
             GCode::new(Mnemonic::General, 1.0, Span::PLACEHOLDER)
                 .with_argument(Word::new('X', 1.0, Span::PLACEHOLDER))
@@ -446,9 +469,8 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
     // This test focuses on the G90 and M7 on the same line.
-    fn two_commands_in_a_row() {
+    fn implicit_command_two_commands_on_line() {
         let src = "G90 M7\nG01 X1.0 Y2.0\nX3.0 Y4.0";
         let expected = vec![
             GCode::new(Mnemonic::General, 90.0, Span::PLACEHOLDER),

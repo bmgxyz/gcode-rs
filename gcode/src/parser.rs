@@ -187,7 +187,7 @@ where
 
     fn on_arg_push_error(&mut self, gcode: &GCode<B::Arguments>, arg: Word) {
         self.callbacks.gcode_argument_buffer_overflowed(
-            gcode.mnemonic(),
+            gcode.mnemonic,
             gcode.major_number(),
             gcode.minor_number(),
             arg,
@@ -200,11 +200,11 @@ where
 
     fn on_gcode_push_error(&mut self, gcode: GCode<B::Arguments>) {
         self.callbacks.gcode_buffer_overflowed(
-            gcode.mnemonic(),
+            gcode.mnemonic,
             gcode.major_number(),
             gcode.minor_number(),
             gcode.arguments(),
-            gcode.span(),
+            gcode.span,
         );
     }
 

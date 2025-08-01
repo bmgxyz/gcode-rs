@@ -62,11 +62,12 @@ impl Display for Mnemonic {
     feature = "serde-1",
     derive(serde_derive::Serialize, serde_derive::Deserialize)
 )]
+#[allow(missing_docs)]
 pub struct GCode<A = DefaultArguments> {
-    mnemonic: Mnemonic,
-    number: f32,
-    arguments: A,
-    span: Span,
+    pub mnemonic: Mnemonic,
+    pub number: f32,
+    pub arguments: A,
+    pub span: Span,
 }
 
 impl GCode {
@@ -97,9 +98,6 @@ impl<A: Buffer<Word>> GCode<A> {
         }
     }
 
-    /// The overall category this [`GCode`] belongs to.
-    pub fn mnemonic(&self) -> Mnemonic { self.mnemonic }
-
     /// The integral part of a command number (i.e. the `12` in `G12.3`).
     pub fn major_number(&self) -> u32 {
         debug_assert!(self.number >= 0.0);
@@ -115,10 +113,9 @@ impl<A: Buffer<Word>> GCode<A> {
     }
 
     /// The arguments attached to this [`GCode`].
-    pub fn arguments(&self) -> &[Word] { self.arguments.as_slice() }
-
-    /// Where the [`GCode`] was found in its source text.
-    pub fn span(&self) -> Span { self.span }
+    pub fn arguments(&self) -> &[Word] {
+        self.arguments.as_slice()
+    }
 
     /// Add an argument to the list of arguments attached to this [`GCode`].
     pub fn push_argument(
@@ -201,7 +198,7 @@ impl<A: Buffer<Word>> Debug for GCode<A> {
 
 impl<A: Buffer<Word>> Display for GCode<A> {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "{}{}", self.mnemonic(), self.major_number())?;
+        write!(f, "{}{}", self.mnemonic, self.major_number())?;
 
         if self.minor_number() != 0 {
             write!(f, ".{}", self.minor_number())?;
@@ -228,7 +225,7 @@ where
             span,
         } = self;
 
-        *span == other.span()
+        *span == other.span
             && *mnemonic == other.mnemonic
             && *number == other.number
             && arguments.as_slice() == other.arguments.as_slice()

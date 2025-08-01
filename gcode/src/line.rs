@@ -68,7 +68,7 @@ impl<'input, B: Buffers<'input>> Line<'input, B> {
         gcode: GCode<B::Arguments>,
     ) -> Result<(), CapacityError<GCode<B::Arguments>>> {
         // Note: We need to make sure a failed push doesn't change our span
-        let span = self.span.merge(gcode.span());
+        let span = self.span.merge(gcode.span);
         self.gcodes.try_push(gcode)?;
         self.span = span;
 

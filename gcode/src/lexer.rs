@@ -84,7 +84,9 @@ impl<'input> Lexer<'input> {
         }
     }
 
-    fn skip_whitespace(&mut self) { let _ = self.chomp(char::is_whitespace); }
+    fn skip_whitespace(&mut self) {
+        let _ = self.chomp(char::is_whitespace);
+    }
 
     fn tokenize_comment(&mut self) -> Option<Token<'input>> {
         let start = self.current_position;
@@ -177,7 +179,7 @@ impl<'input> Lexer<'input> {
             },
         })
     }
-    
+
     fn tokenize_newline(&mut self) -> Option<Token<'input>> {
         let start = self.current_position;
         let line = self.current_line;
@@ -195,7 +197,9 @@ impl<'input> Lexer<'input> {
         })
     }
 
-    fn finished(&self) -> bool { self.current_position >= self.src.len() }
+    fn finished(&self) -> bool {
+        self.current_position >= self.src.len()
+    }
 
     fn peek(&self) -> Option<TokenType> {
         self.rest().chars().next().map(TokenType::from)
@@ -203,7 +207,9 @@ impl<'input> Lexer<'input> {
 }
 
 impl<'input> From<&'input str> for Lexer<'input> {
-    fn from(other: &'input str) -> Lexer<'input> { Lexer::new(other) }
+    fn from(other: &'input str) -> Lexer<'input> {
+        Lexer::new(other)
+    }
 }
 
 impl<'input> Iterator for Lexer<'input> {
@@ -288,7 +294,7 @@ mod tests {
         let mut lexer = Lexer::new("\n\rM30garbage");
 
         let token = lexer.tokenize_newline().unwrap();
-        
+
         assert_eq!(token.kind, TokenType::Newline);
         assert_eq!(lexer.current_position, 1);
         assert_eq!(lexer.current_line, 1);

@@ -74,7 +74,9 @@ impl PartialEq for Span {
 }
 
 impl From<Span> for Range<usize> {
-    fn from(other: Span) -> Range<usize> { other.start..other.end }
+    fn from(other: Span) -> Range<usize> {
+        other.start..other.end
+    }
 }
 
 impl Debug for Span {
@@ -94,7 +96,9 @@ impl Debug for Span {
 }
 
 impl Default for Span {
-    fn default() -> Span { Span::PLACEHOLDER }
+    fn default() -> Span {
+        Span::PLACEHOLDER
+    }
 }
 
 #[cfg(test)]

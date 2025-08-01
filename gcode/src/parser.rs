@@ -51,7 +51,9 @@ impl<'input, C, B> Parser<'input, C, B> {
 }
 
 impl<'input, B> From<&'input str> for Parser<'input, Nop, B> {
-    fn from(src: &'input str) -> Self { Parser::new(src, Nop) }
+    fn from(src: &'input str) -> Self {
+        Parser::new(src, Nop)
+    }
 }
 
 impl<'input, C: Callbacks, B: Buffers<'input>> Iterator
@@ -59,7 +61,9 @@ impl<'input, C: Callbacks, B: Buffers<'input>> Iterator
 {
     type Item = Line<'input, B>;
 
-    fn next(&mut self) -> Option<Self::Item> { self.lines.next() }
+    fn next(&mut self) -> Option<Self::Item> {
+        self.lines.next()
+    }
 }
 
 #[derive(Debug)]
@@ -137,7 +141,7 @@ where
                 word.span,
                 B::Arguments::default(),
             ));
-            
+
             return;
         }
 
@@ -207,7 +211,6 @@ where
             gcode.span,
         );
     }
-
 }
 
 impl<'input, I, C, B> Iterator for Lines<'input, I, C, B>

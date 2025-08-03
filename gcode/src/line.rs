@@ -10,11 +10,12 @@ use core::fmt::{self, Debug, Formatter};
     feature = "serde-1",
     derive(serde_derive::Serialize, serde_derive::Deserialize)
 )]
+#[allow(missing_docs)]
 pub struct Line<'input, B: Buffers<'input> = DefaultBuffers> {
-    gcodes: B::Commands,
-    comments: B::Comments,
-    line_number: Option<Word>,
-    span: Span,
+    pub gcodes: B::Commands,
+    pub comments: B::Comments,
+    pub line_number: Option<Word>,
+    pub span: Span,
 }
 
 impl<'input, B> Debug for Line<'input, B>
